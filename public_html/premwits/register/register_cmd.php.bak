@@ -1,0 +1,28 @@
+<?
+	session_start();
+	$_SESSION["$username"]=$_REQUEST["username"];
+	$_SESSION["$password"]=$_REQUEST["password"];
+	$_SESSION["$code"]=$_REQUEST["code"];
+	$username=$_REQUEST["username"];
+	$password=$_REQUEST["password"];
+	$code=$_REQUEST["code"];
+	$sq_location=" # LOCATION # ";
+	$sq_user=" # USER # ";
+	$sq_pass=" # PASS # ";
+	$sq_db=" # DATABASE # ";
+	$conn = mysql_connect($sq_location,$sq_user,$sq_pass) or die("Error: could not connect to SQL Server\n");
+	mysql_select_db($sq_db) or die("Error: could not connect to database\n");
+	$res=mysql_query("select * from verification_code");
+	$check=0;
+	while($row=mysql_fetch_row($res)){
+		//printf("%s %s\n",$code,$row[1]);
+		if($row[1]==$code){
+			mysql_query("insert into user values('$username','$password','$row[0]')");
+			$check=1;
+			break;
+		}
+	}
+	if($check==0) printf("Verification code incorrect\n");
+	else printf("Submit successful\n");
+	mysql_close();
+?>
